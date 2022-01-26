@@ -11,7 +11,9 @@ const connectWalletHandler = async (setCurrentAccount,setNetwork) => {
     const { ethereum } = window;
     if (!ethereum) {
         alert("Please install Metamask!");
+        return;
     }
+
     try {
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         if (accounts.length !== 0) {
