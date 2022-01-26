@@ -6,7 +6,7 @@ import Web3 from "web3";
 import contract from "../abi/UserScore.json";
 import React, {useEffect, useState} from "react";
 
-const  User = ()=>{
+const  User = ({currentAccount})=>{
     const [score, setScore] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -20,7 +20,7 @@ const  User = ()=>{
         );
         setLoading(true);
         setTimeout(()=>{
-            erc20Contract.methods.getScore().call({from:window.selectedAccount}).then((res)=>{
+            erc20Contract.methods.getScore().call({from:currentAccount}).then((res)=>{
                 setScore(res);
                 setLoading(false)
             });

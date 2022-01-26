@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -11,14 +11,17 @@ import Web3 from "web3";
 import contract from "../abi/UserScore.json";
 
 function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
-
-    const validate = (inputName,docName)=>{
+    const ref = useRef();
+    const validate = (inputName,event)=>{
+        let docName = event?.target?.files[0]?.name;
         let name = docName.split('.').slice(0, -1).join('.')
-        if(Allow_File_Name.indexOf(name)>=0){
-            onChange(inputName,docName)
+        if(docName && Allow_File_Name.indexOf(name)>=0){
+            onChange(inputName,name)
         }
         else{
-            alert("Please select file name with"  +  Allow_File_Name.join(",") +  "only");
+
+            alert("Please select file name with "  +  Allow_File_Name.join(",") +  " only");
+            ref.current.value = "";
         }
     }
     return (
@@ -30,7 +33,8 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
              className="custom-file-label"
              id="inputGroupFile01"
              label={fileName}
-             onChange={(e) => validate(fileName,e.target.files[0].name)}
+              ref={ref}
+              onChange={(e) => validate(fileName, e)}
         />
         </Col>
         <Col>
@@ -39,7 +43,7 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
         </Form.Group>
     )
 }
-function ServiceProvider() {
+function ServiceProvider({currentAccount}) {
     const maxFiles = 8;
     const [fileNames, setFileNames] = useState({});
     const [files, setFiles] = useState(['doc1']);
@@ -79,7 +83,7 @@ function ServiceProvider() {
         );
         try{
             setLoadingState({status: Status_Type.PENDING, message: 'Processing.... Please wait',actionType: Action_Type.UPLOAD},setLoading)
-            let res = await erc20Contract.methods.upload(prepareUploadInput(fileNames)).send({from:window.selectedAccount});
+            let res = await erc20Contract.methods.upload(prepareUploadInput(fileNames)).send({from:currentAccount});
             setLoadingState({status: Status_Type.SUCCESS ,message:`Upload is complete please see the transiction  <a target="_blank" rel="noreferrer" href=https://ropsten.etherscan.io/tx/${res}>here</a>`, actionType: Action_Type.UPLOAD},setLoading)
             navigate("/user");
         }

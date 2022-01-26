@@ -8,8 +8,6 @@ const networkMap = {
     3:"ropsten"
 }
 const connectWalletHandler = async (setCurrentAccount,setNetwork) => {
-    //console.log("setCurrentAccount,setNetwork",setCurrentAccount,setNetwork)
-    //debugger;
     const { ethereum } = window;
     if (!ethereum) {
         alert("Please install Metamask!");
@@ -19,7 +17,7 @@ const connectWalletHandler = async (setCurrentAccount,setNetwork) => {
         if (accounts.length !== 0) {
             setCurrentAccount(accounts[0]);
             console.log("------accout----",accounts[0])
-            window.selectedAccount = accounts[0];
+            //window.selectedAccount = accounts[0];
 
             initContractHandler(setNetwork)
         } else {
@@ -28,7 +26,7 @@ const connectWalletHandler = async (setCurrentAccount,setNetwork) => {
         // handle change account
         ethereum.on('accountsChanged', function (accounts) {
             setCurrentAccount(accounts[0]);
-            window.selectedAccount = accounts[0]
+            //window.selectedAccount = accounts[0]
             initContractHandler(setNetwork)
             console.log(`Selected account changed to ${accounts[0]}`);
         });
@@ -41,8 +39,9 @@ const connectWalletHandler = async (setCurrentAccount,setNetwork) => {
         const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
         if (accounts.length !== 0) {
             setCurrentAccount(accounts[0]);
-            window.selectedAccount = accounts[0]
+            //window.selectedAccount = accounts[0]
             let res = initContractHandler(setNetwork)
+
             console.log("---res---",res)
         } else {
             console.log("No authorized account found");
@@ -50,25 +49,8 @@ const connectWalletHandler = async (setCurrentAccount,setNetwork) => {
     }, false);
 };
 
-const isWalletConnected = async (setCurrentAccount,setNetwork) => {
-    const { ethereum } = window;
-    if (!ethereum) {
-        alert("Please install Metamask!");
-    }
-    try {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        if (accounts.length !== 0) {
-            window.selectedAccount = accounts[0];
-            return true;
-        } else {
-            console.log("No authorized account found");
-            return false;
-        }
-    } catch (err) {
-        console.log(err)
-        return false;
-    }
-
+const isWalletConnected =  (setCurrentAccount,setNetwork) => {
+    return !!window.selectedAccount
 };
 
 const initContractHandler = async (setNetwork) => {

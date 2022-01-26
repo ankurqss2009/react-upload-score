@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import Home from './Home';
 import  ServiceProvider from './component/ServiceProvider';
 import  User from './component/User';
-import  ConnectWallet from './component/ConnectWallet';
+//import  ConnectWallet from './component/ConnectWallet';
 import  Header from './component/Header';
 
 import {connectWalletHandler,isWalletConnected} from './common/utils'
@@ -19,27 +19,31 @@ import {
     Navigate
 } from "react-router-dom";
 
+const AppRouts = ({currentAccount,network, setNetwork, setCurrentAccount}) => {
+    return (
+        <>
+            <Router>
+                <Header/>
+                <Routes>
+                    <Route exact path="/" element={<Home currentAccount={currentAccount} network={network} setNetwork={setNetwork} setCurrentAccount={setCurrentAccount} />}/>
+                    <Route exact path="/user" element={!currentAccount ? <Navigate to="/" /> : <User currentAccount={currentAccount}/>}/>
+                    <Route exact path="/service-provider" element={!currentAccount ? <Navigate to="/" /> : <ServiceProvider currentAccount={currentAccount}/>}/>
+                </Routes>
+            </Router>
+        </>
+    );
+};
+
+
 
 const App = () => {
     const [currentAccount,setCurrentAccount] = useState('');
     const [network,setNetwork] = useState('');
     useEffect(()=>{
-     connectWalletHandler(setCurrentAccount,setNetwork).then(()=>{
-         console.log("response");
-     });
+        connectWalletHandler(setCurrentAccount,setNetwork);
     },[]);
     return (
-        <>
-        <Router>
-                <Header/>
-                <Routes>
-                    <Route exact path="/" element={!isWalletConnected() ? <Navigate to="/connect" /> : <Home/>}/>
-                    <Route exact path="/user" element={!isWalletConnected() ? <Navigate to="/connect" /> : <User/>}/>
-                    <Route exact path="/service-provider" element={!isWalletConnected() ? <Navigate to="/connect" /> : <ServiceProvider/>}/>
-                    {!isWalletConnected() && <Route exact path="/connect" element={<ConnectWallet/>}/>}
-                </Routes>
-        </Router>
-        </>
+        <AppRouts currentAccount={currentAccount} setCurrentAccount={setCurrentAccount} setNetwork={setNetwork} network={network}/>
     );
 }
 
