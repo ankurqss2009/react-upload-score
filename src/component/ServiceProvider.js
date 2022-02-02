@@ -55,10 +55,21 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames
             ref.current.value = "";
         }
     }
+    const onRemoveHandler = (index, typeRef, name)=>{
+        console.log("index, ref, name",index, ref, name)
+        let val = typeRef?.current?.getValue()[0]?.value;
+        //let docName = typeRef?.current?.getValue()[0]?.value;
+        let newtypes = Object.assign(types,{});
+        delete newtypes[val];
+        setTypes({...newtypes})
+        onRemove(index, val)
+    }
+    let options = actions.filter((act)=>{return !types.hasOwnProperty(act.value)})
+
     return (
         <Form.Group as={Row}>
         <Col sm={2}>
-            <Select options={ actions } ref={typeRef} onChange={(e)=>{validateType(e)}}/>
+            <Select options={ options } ref={typeRef} onChange={(e)=>{validateType(e)}}/>
         </Col>
         <Col>
             <Form.Control key={index}
@@ -72,7 +83,7 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames
             />
         </Col>
         <Col>
-            {!hideDelete &&<Button size="sm" variant="primary" onClick={(e)=>onRemove(index)}>Delete</Button>}
+            {!hideDelete &&<Button size="sm" variant="primary" onClick={(e)=>onRemoveHandler(index,typeRef,fileName)}>Delete</Button>}
         </Col>
         </Form.Group>
     )
