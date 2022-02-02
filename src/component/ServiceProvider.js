@@ -1,4 +1,6 @@
 import React, { useState,useRef } from "react";
+import Select from 'react-select';
+
 import { useNavigate } from "react-router-dom";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,13 +12,32 @@ import {prepareUploadInput,setLoadingState} from '../common/utils';
 import Web3 from "web3";
 import contract from "../abi/UserScore.json";
 
+const actions = [
+    { label: "Type1", value: "doc1" },
+    { label: "Type2", value: "doc2" },
+    { label: "Type3", value: "doc3" },
+    { label: "Type4", value: "doc4" },
+    { label: "Type5", value: "doc5" },
+    { label: "Type6", value: "doc6" },
+    { label: "Type7", value: "doc7" },
+    { label: "Type8", value: "doc8" }
+];
+
 function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
+    const typeRef = useRef();
     const ref = useRef();
     const validate = (inputName,event)=>{
+        let type = typeRef.current?.getValue()[0]?.value
+        console.log("--typeRef--",type);
+        if(!type){
+            alert("Please select type first");
+            ref.current.value = "";
+            return;
+        }
         let docName = event?.target?.files[0]?.name;
         let name = docName.split('.').slice(0, -1).join('.')
-        if(docName && Allow_File_Name.indexOf(name)>=0){
-            onChange(inputName,name)
+        if(type && docName && Allow_File_Name.indexOf(name)>=0){
+            onChange(type,name)
         }
         else{
 
@@ -26,16 +47,19 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
     }
     return (
         <Form.Group as={Row}>
+        <Col sm={2}>
+            <Select options={ actions } ref={typeRef}/>
+        </Col>
         <Col>
-        <Form.Control key={index}
-             type="file"
-             name={fileName}
-             className="custom-file-label"
-             id="inputGroupFile01"
-             label={fileName}
-              ref={ref}
-              onChange={(e) => validate(fileName, e)}
-        />
+            <Form.Control key={index}
+                 type="file"
+                 name={fileName}
+                 className="custom-file-label"
+                 id="inputGroupFile01"
+                 label={fileName}
+                  ref={ref}
+                  onChange={(e) => validate(fileName, e)}
+            />
         </Col>
         <Col>
             {!hideDelete &&<Button size="sm" variant="primary" onClick={(e)=>onRemove(index)}>Delete</Button>}
