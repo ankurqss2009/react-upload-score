@@ -23,12 +23,22 @@ const actions = [
     { label: "Type8", value: "doc8" }
 ];
 
-function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
+function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames, setTypes, types}){
     const typeRef = useRef();
     const ref = useRef();
+    const validateType = ({label,value})=>{
+        if(types.hasOwnProperty(value)){
+            alert(label + " already selected");
+        }
+        else{
+            let newtypes = Object.assign(types,{[value]:true});
+            setTypes({...newtypes})
+        }
+    };
+
     const validate = (inputName,event)=>{
         let type = typeRef.current?.getValue()[0]?.value
-        console.log("--typeRef--",type);
+        //console.log("--typeRef--",type);
         if(!type){
             alert("Please select type first");
             ref.current.value = "";
@@ -48,7 +58,7 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete}){
     return (
         <Form.Group as={Row}>
         <Col sm={2}>
-            <Select options={ actions } ref={typeRef}/>
+            <Select options={ actions } ref={typeRef} onChange={(e)=>{validateType(e)}}/>
         </Col>
         <Col>
             <Form.Control key={index}
@@ -71,6 +81,8 @@ function ServiceProvider({currentAccount}) {
     const maxFiles = 8;
     const [fileNames, setFileNames] = useState({});
     const [files, setFiles] = useState(['doc1']);
+    const [types, setTypes] = useState({});
+
     const [loading, setLoading] = useState({status:null,message:'',actionType:''});
     const navigate = useNavigate();
 
@@ -121,7 +133,7 @@ function ServiceProvider({currentAccount}) {
             <>
                 {
                     files.map(function(file, i){
-                        return <FileUpload key={file} index={i} fileName={file} onChange={setSelectedFiles} onRemove={onRemove} hideDelete={files.length <= 1} ></FileUpload>
+                        return <FileUpload setTypes={setTypes}  types={types} key={file} index={i} fileName={file} onChange={setSelectedFiles} onRemove={onRemove} hideDelete={files.length <= 1} ></FileUpload>
                     })
                 }
                 <Row>
