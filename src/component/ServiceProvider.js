@@ -26,14 +26,9 @@ const actions = [
 function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames, setTypes, types}){
     const typeRef = useRef();
     const ref = useRef();
-    const validateType = ({label,value})=>{
-        if(types.hasOwnProperty(value)){
-            alert(label + " already selected");
-        }
-        else{
-            let newtypes = Object.assign(types,{[value]:true});
-            setTypes({...newtypes})
-        }
+    const validateType = ({label,value}, name)=>{
+        let newtypes = Object.assign(types,{[name]:value});
+        setTypes({...newtypes})
     };
 
     const validate = (inputName,event)=>{
@@ -64,12 +59,12 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames
         setTypes({...newtypes})
         onRemove(index, val)
     }
-    let options = actions.filter((act)=>{return !types.hasOwnProperty(act.value)})
+    let options = actions.filter((act)=>{return Object.values(types).indexOf(act.value) ==-1})
 
     return (
         <Form.Group as={Row}>
         <Col sm={2}>
-            <Select options={ options } ref={typeRef} onChange={(e)=>{validateType(e)}}/>
+            <Select options={ options } name={fileName} ref={typeRef} onChange={(e)=>{validateType(e,fileName)}}/>
         </Col>
         <Col>
             <Form.Control key={index}
