@@ -33,7 +33,6 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames
 
     const validate = (inputName,event)=>{
         let type = typeRef.current?.getValue()[0]?.value
-        //console.log("--typeRef--",type);
         if(!type){
             alert("Please select type first");
             ref.current.value = "";
@@ -41,14 +40,14 @@ function  FileUpload ({index,fileName, onChange, onRemove, hideDelete, fileNames
         }
         let docName = event?.target?.files[0]?.name;
         let name = docName.split('.').slice(0, -1).join('.')
-        if(type && docName && Allow_File_Name.indexOf(name)>=0){
+        if(type && docName){
             onChange(type,name)
         }
-        else{
+        /*else{
 
             alert("Please select file name with "  +  Allow_File_Name.join(",") +  " only");
             ref.current.value = "";
-        }
+        }*/
     }
     const onRemoveHandler = (index, typeRef, name)=>{
         console.log("index, ref, name",index, ref, name)
@@ -112,7 +111,7 @@ function ServiceProvider({currentAccount}) {
     }
 
     const setSelectedFiles = (inputName,docName)=>{
-        let obj = Object.assign(fileNames,{[inputName]:getDocScore(docName)})
+        let obj = Object.assign(fileNames,{[inputName]:getDocScore(inputName)})
         setFileNames({...obj})
     }
     const uploadFileHandler = async () => {
